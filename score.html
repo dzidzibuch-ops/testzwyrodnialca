@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Twój Wynik - Test Zwyrodnialca</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #0C0712;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+.result-box {
+  text-align: center;
+  max-width: 600px;
+}
+.result-box h1 {
+  font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+  font-size: 2.5rem;
+  color: #fff;
+  text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 40px #fff;
+  margin-bottom: 40px;
+}
+.score {
+  font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+  font-size: 8rem;
+  color: #fff;
+  text-shadow: 0 0 15px #fff, 0 0 30px #fff, 0 0 60px #fff, 0 0 120px #fff;
+  margin-bottom: 10px;
+}
+.score-label {
+  color: rgba(255,255,255,0.5);
+  font-size: 1.2rem;
+  margin-bottom: 40px;
+  font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+}
+.disclaimer {
+  color: rgba(255,255,255,0.3);
+  font-size: 0.8rem;
+  margin-top: 60px;
+  font-style: italic;
+}
+.btn-back {
+  display: inline-block;
+  margin-top: 30px;
+  font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+  font-size: 1rem;
+  padding: 14px 36px;
+  background: #fff;
+  color: #000;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn-back:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(255,255,255,0.3);
+}
+</style>
+</head>
+<body>
+
+<div class="result-box">
+  <h1>TWOJ WYNIK</h1>
+  <div class="score" id="scoreDisplay">0</div>
+  <div class="score-label">punktów</div>
+  <div class="disclaimer">im więcej punktów, tym większym zwyrodnialcem jesteś</div>
+  <a class="btn-back" href="index.html">WRÓC DO TESTU</a>
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const score = parseInt(params.get('score')) || 0;
+document.getElementById('scoreDisplay').textContent = score;
+</script>
+</body>
+</html>

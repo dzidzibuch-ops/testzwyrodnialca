@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Zwyrodnialca</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #0C0712;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+}
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.header h1 {
+  font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+  font-size: 4.5rem;
+  color: #fff;
+  text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 40px #fff, 0 0 80px #fff;
+  letter-spacing: 4px;
+}
+.header .counter {
+  color: rgba(255,255,255,0.6);
+  font-size: 1rem;
+  margin-top: 12px;
+  font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+}
+.question-block {
+  background: #1E0E21;
+  width: 100%;
+  max-width: 720px;
+  padding: 30px 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.question-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.question-item:last-child { border-bottom: none; }
+.question-item input[type="checkbox"] {
+  margin-top: 3px;
+  width: 18px;
+  height: 18px;
+  accent-color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.question-item label {
+  color: #fff;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  cursor: pointer;
+  user-select: none;
+}
+.question-item .num {
+  color: rgba(255,255,255,0.35);
+  font-size: 0.85rem;
+  min-width: 32px;
+  flex-shrink: 0;
+  padding-top: 2px;
+  font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+}
+.btn-wrapper {
+  text-align: center;
+  margin-top: 40px;
+  margin-bottom: 60px;
+}
+.btn-calculate {
+  font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+  font-size: 1.6rem;
+  padding: 20px 50px;
+  background: #fff;
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  letter-spacing: 2px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn-calculate:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px rgba(255,255,255,0.3);
+}
+.btn-calculate:active { transform: scale(0.97); }
+@media (max-width: 600px) {
+  .header h1 { font-size: 2rem; }
+  .question-block { padding: 20px 12px; }
+  .btn-calculate { font-size: 1.2rem; padding: 16px 30px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>TEST ZWYRODNIALCA</h1>
+  <div style="font-family:'Comic Sans MS','Comic Sans',cursive; color:#b44dff; font-size:0.85rem; text-shadow:0 0 5px #b44dff,0 0 10px #b44dff,0 0 20px #b44dff; margin-top:4px;">made by kazaki</div>
+  <div class="counter">Zaznaczone: <span id="countDisplay">0</span> / 200</div>
+</div>
+
+<div class="question-block" id="questionList"></div>
+
+<div class="btn-wrapper">
+  <button class="btn-calculate" onclick="calculateScore()">OBLICZ MOJE ZWYRODNIALSTWO</button>
+</div>
+
+<script>
+const questions = [
+"trzymałeś się za ręce?",
+"byłeś na randce?",
+"byłeś w związku?",
+"byłeś w związku dłuższym niż 6 miesięcy?",
+"całowałeś się? (nie z mamą)",
+"całowałeś się z języczkiem?",
+"całowałeś się w miejscu publicznym?",
+"całowałeś kogoś w szyję albo ktoś cię całował?",
+"całowałeś się do góry nogami?",
+"malinka?",
+"całowałeś kogoś / całował cię ktoś w cycuszka?",
+"całowałeś kogoś / całował cię ktoś poniżej pasa?",
+"całowałeś się z więcej niż trzema osobami w jeden dzień?",
+"brałeś udział w jakiejś rozbieranej grze?",
+"widziałeś striptizerkę/striptizera?",
+"lubisz pomidory?",
+"zakochałeś się?",
+"umiesz otwierać piwo zębami?",
+"ekshibicjonizm?",
+"BDSM?",
+"pływałeś nago w rzece/jeziorze?",
+"goliłeś nogi?",
+"masturbowałeś się?",
+"masturbowałeś się gdy ktoś inny był w pokoju?",
+"masturbowałeś się w miejscu publicznym?",
+"masturbowałeś się przed kimś?",
+"złapali cię na masturbacji?",
+"masturbowałeś się jakimś obiektem?",
+"robiłeś sobie palcówkę?",
+"waliłeś sobie konia?",
+"ktoś ci robił palcówkę?",
+"ktoś ci walił konia?",
+"wsadziłeś sobie palec w dupę?",
+"masz tatuaż?",
+"masz kolczyk w nietypowym miejscu?",
+"ocierałeś się z kimś?",
+"pieściłeś kogoś / ktoś cię pieścił po dupci?",
+"pieściłeś kogoś / ktoś cię pieścił po cyckach?",
+"pieściłeś kogoś / ktoś cię pieścił po genitaliach?",
+"pornoski oglądałeś?",
+"zapłaciłeś pieniądze za treści pornograficzne?",
+"robiłeś komuś loda?",
+"ktoś ci robił loda?",
+"robiłeś komuś minetę?",
+"ktoś ci robił minetę?",
+"zabawki erotyczne?",
+"serek spod napletka?",
+"obcinałeś włoski łonowe nożyczkami?",
+"miałeś freaky wideorozmowę?",
+"wysłałeś nudesa?",
+"dostałeś nudesa?",
+"sexting?",
+"masturbowałeś się rozmawiając z kimś bez wiedzy tej osoby?",
+"seks?",
+"seks homo?",
+"seks 3 lub więcej razy w ciągu jednej nocy?",
+"seks z więcej niż jedną osobą w ciągu 24h?",
+"uprawiałeś seks więcej niż 10 razy?",
+"wypróbowałeś więcej niż 5 pozycji seksualnych?",
+"uprawiałeś seks z dziewicą?",
+"uprawiałeś seks bez gumy?",
+"orgia?",
+"miałeś więcej niż 5 partnerów?",
+"uprawiałeś seks z kimś z kim nie byłeś w bliskiej relacji?",
+"trójkącik?",
+"byłeś cuckoldem?",
+"69?",
+"anal?",
+"seks podczas okresu?",
+"utrzymywałeś relacje seksualne z osobą z którą dzieliło was więcej niż 3 lata różnicy?",
+"uprawiałeś seks w miejscu publicznym?",
+"ktoś nakrył cię na uprawianiu seksu?",
+"wyrzuciłeś kogoś z pokoju żeby uprawiać seks?",
+"uprawiałeś seks gdy rodzice byli w domu?",
+"uprawiałeś seks gdy ktoś trzeci był w pokoju?",
+"kupiłeś antykoncepcję?",
+"bałeś się, że zaciążyłeś/będziesz w ciąży?",
+"miałeś wenere?",
+"spędziłeś noc z płcią przeciwną?",
+"lubisz hello kitty?",
+"oglądasz anime?",
+"jesteś furry?",
+"alkohol?",
+"grałeś w grę z piciem alkoholu?",
+"udawałeś trzeźwego?",
+"zgonowałeś?",
+"wypiłeś więcej niż 15 shotów jednego wieczoru?",
+"straciłeś pamięć na rzecz używki?",
+"piłeś alkohol przed 15 rokiem życia?",
+"ukrywałeś substancje przed rodzicami?",
+"papierosy?",
+"e-papierosy?",
+"marihuana?",
+"jakikolwiek silny psychodelik? (LSD, DMT, grzyby...)",
+"brałeś kryształ?",
+"wąchałeś klej?",
+"cheatowałeś w jakiejś grze?",
+"zostałeś wysłany na dywanik do dyrekcji?",
+"zawieszony w szkole?",
+"dostałeś kiedyś naganę w szkole?",
+"ściągałeś w szkole?",
+"udawałeś chorego, żeby gdzieś nie iść?",
+"wagary?",
+"zarwałeś noc?",
+"zaspałeś na coś ważnego?",
+"nie zdałeś?",
+"wykorzystałeś AI do pracy domowej?",
+"wisisz komuś pieniądze?",
+"udawałeś, że masz wiedzę na jakiś temat?",
+"podrabiałeś czyjś podpis?",
+"kradłeś?",
+"brałeś udział w bójce?",
+"popełniłeś akt wandalizmu?",
+"jeździłeś bez prawa jazdy?",
+"fałszywy dowód?",
+"pracowałeś na czarno?",
+"uciekałeś przed policją?",
+"zadzwoniono na ciebie na policję?",
+"sypnąłeś/doniosłeś na kogoś na policji?",
+"aresztowany?",
+"skazany prawomocnie?",
+"miałeś sprawę w sądzie?",
+"byłeś świadkiem przestępstwa i go nie zgłosiłeś?",
+"znasz dilera?",
+"naplułeś na kogoś?",
+"zwyzywałeś nieznaną ci osobę?",
+"zdradziłeś kogoś?",
+"życzyłeś komuś śmierci?",
+"znęcałeś się nad kimś/wyśmiewałeś kogoś?",
+"bili cię w szkole?",
+"rasizm?",
+"lubisz żydów?",
+"rozpowiadałeś o kimś plotki?",
+"gaslightowałeś kogoś?",
+"celowo kogoś wprowadzałeś w błąd?",
+"ragebaitowałeś kogoś?",
+"ghostowałeś kogoś?",
+"doxxowałeś kogoś?",
+"włamałeś się komuś na jakieś konto?",
+"podejrzałeś czyjeś wrażliwe dane?",
+"wyjawiłeś czyjś sekret mimo obietnicy zachowania go?",
+"czytałeś cudzą korespondencję bez wiedzy tej osoby?",
+"grzebałeś w cudzym telefonie bez wiedzy tej osoby?",
+"podsłuchiwałeś czyjąś rozmowę?",
+"sprawdzasz telefon w ciągu 5 min od obudzenia?",
+"sprawdzasz telefon przed snem?",
+"konto na aplikacji randkowej?",
+"masz jakieś fake konto?",
+"podszywałeś się pod kogoś?",
+"robiłeś komuś zdjęcia z ukrycia?",
+"zjadłeś kiedyś spermę/śluz?",
+"zjadłeś gówno?",
+"sikasz pod prysznicem?",
+"sikałeś w miejscu publicznym?",
+"stawiałeś kloca w miejscu publicznym?",
+"srałeś kiedyś w szkole?",
+"nie myłeś się więcej niż tydzień?",
+"połknąłeś coś spleśniałego?",
+"zrzygałeś się kiedyś na kogoś?",
+"zrzygał się ktoś kiedyś na ciebie?",
+"wytarłeś w kogoś gluta?",
+"ugryzłeś kogoś?",
+"byłeś na mocnej domówce?",
+"zostałeś skądś wyrzucony?",
+"grałeś w butelkę?",
+"hazard?",
+"wysmarowałeś kogoś pastą/zostałeś wysmarowany pastą?",
+"self-harm?",
+"depresja?",
+"miałeś atak paniki?",
+"próbowałeś się zabić?",
+"głodziłeś się?",
+"byłeś w psychiatryku?",
+"byłeś na SOR-ze?",
+"złamałeś coś kiedyś?",
+"przeszedłeś jakąś operację?",
+"zemdlałeś?",
+"widziałeś czyjąś śmierć?",
+"oglądałeś gore?",
+"czy twoi rodzice się rozwiedli/nie są już razem?",
+"doprowadziłeś któregoś z rodziców do płaczu?",
+"uciekłeś z domu?",
+"byłeś na koloniach?",
+"pojechałeś sam do innego miasta będąc dzieckiem?",
+"mieszkasz w Warszawie?",
+"jesteś wegetarianinem?",
+"jesteś weganem?",
+"skrzywdziłeś celowo zwierzę?",
+"byłeś w sex shopie?",
+"piłeś własny mocz?",
+"spaliłeś coś większego?",
+"masz/miałeś kuratora?",
+"czynności seksualne z osobą poniżej 15 roku życia?",
+"zgwałciłeś kogoś?",
+"groziłeś komuś?",
+"kazirodztwo?",
+"zoofilia?",
+"CP?",
+"zapłacono ci za akt seksualny?",
+"jesz płatki z mlekiem na ciepło?"
+];
+
+function renderQuestions() {
+  const container = document.getElementById('questionList');
+  questions.forEach((q, i) => {
+    const div = document.createElement('div');
+    div.className = 'question-item';
+    const num = document.createElement('span');
+    num.className = 'num';
+    num.textContent = (i + 1) + '.';
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.id = 'q' + i;
+    cb.onchange = updateCounter;
+    const label = document.createElement('label');
+    label.htmlFor = 'q' + i;
+    label.textContent = q;
+    div.appendChild(num);
+    div.appendChild(cb);
+    div.appendChild(label);
+    container.appendChild(div);
+  });
+}
+
+function updateCounter() {
+  const checkboxes = document.querySelectorAll('#questionList input[type="checkbox"]');
+  let count = 0;
+  checkboxes.forEach(cb => { if (cb.checked) count++; });
+  document.getElementById('countDisplay').textContent = count;
+}
+
+function calculateScore() {
+  const checkboxes = document.querySelectorAll('#questionList input[type="checkbox"]');
+  let score = 0;
+  checkboxes.forEach(cb => { if (cb.checked) score++; });
+  window.location.href = 'score.html?score=' + score;
+}
+
+renderQuestions();
+</script>
+</body>
+</html>
