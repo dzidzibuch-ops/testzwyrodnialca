@@ -479,10 +479,11 @@ function calculateScore() {
   const checkboxes = document.querySelectorAll('#questionList input[type="checkbox"]');
   let score = 0;
   let answers = [];
-  checkboxes.forEach((cb, i) => {
+  checkboxes.forEach(cb => {
     if (cb.checked) {
       score++;
-      answers.push('#' + (i + 1) + ' ' + questions[i]);
+      const idx = parseInt(cb.id.replace('q', ''));
+      answers.push('#' + (idx + 1) + ' ' + questions[idx]);
     }
   });
 
