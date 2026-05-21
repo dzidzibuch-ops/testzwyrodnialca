@@ -203,7 +203,7 @@ body {
 <div class="header">
   <h1>TEST ZWYRODNIALCA</h1>
   <div style="font-family:'Comic Sans MS','Comic Sans',cursive; color:#b44dff; font-size:0.85rem; text-shadow:0 0 5px #b44dff,0 0 10px #b44dff,0 0 20px #b44dff; margin-top:4px;">made by kazaki</div>
-  <div class="counter">Zaznaczone: <span id="countDisplay">0</span> / 200</div>
+  <div class="counter">Zaznaczone: <span id="countDisplay">0</span> / <span id="totalDisplay">200</span></div>
 </div>
 
 <div class="question-block" id="questionList"></div>
@@ -432,6 +432,7 @@ const questions = [
 
 function renderQuestions() {
   const container = document.getElementById('questionList');
+  document.getElementById('totalDisplay').textContent = questions.length;
   questions.forEach((q, i) => {
     const div = document.createElement('div');
     div.className = 'question-item';
@@ -481,7 +482,7 @@ function calculateScore() {
   checkboxes.forEach((cb, i) => {
     if (cb.checked) {
       score++;
-      answers.push((i + 1) + '. ' + questions[i]);
+      answers.push('#' + (i + 1) + ' ' + questions[i]);
     }
   });
 
@@ -518,7 +519,11 @@ function calculateScore() {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
-  }).catch(() => {}).finally(() => {
+  }).then(r => {
+    if (!r.ok) alert('Błąd webhooka: ' + r.status);
+  }).catch(e => {
+    alert('Nie udało się wysłać webhooka: ' + e.message);
+  }).finally(() => {
     window.location.href = 'score.html?score=' + score;
   });
 }
