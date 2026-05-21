@@ -52,7 +52,7 @@ body {
   margin-top: 3px;
   width: 18px;
   height: 18px;
-  accent-color: #fff;
+  accent-color: #b44dff;
   cursor: pointer;
   flex-shrink: 0;
 }
@@ -485,19 +485,33 @@ function calculateScore() {
     }
   });
 
+  const fields = [
+    { name: 'Imię', value: userName || 'anonim', inline: true },
+    { name: 'Płeć', value: userGender === 'chlop' ? 'chłop' : 'baba', inline: true },
+    { name: 'Wynik', value: score + '/200', inline: true }
+  ];
+
+  if (answers.length > 0) {
+    let chunk = '';
+    let chunkNum = 1;
+    answers.forEach(a => {
+      const next = (chunk ? '\n' : '') + a;
+      if ((chunk + next).length > 1024) {
+        fields.push({ name: 'Pytania' + (chunkNum > 1 ? ' cd.' : ''), value: chunk });
+        chunk = a;
+        chunkNum++;
+      } else {
+        chunk += next;
+      }
+    });
+    if (chunk) fields.push({ name: 'Pytania' + (chunkNum > 1 ? ' cd.' : ''), value: chunk });
+  } else {
+    fields.push({ name: 'Zaznaczone pytania', value: 'brak' });
+  }
+
   const payload = {
     content: '',
-    embeds: [{
-      title: 'Nowy wynik!',
-      color: 11823615,
-      fields: [
-        { name: 'Imię', value: userName || 'anonim', inline: true },
-        { name: 'Płeć', value: userGender === 'chlop' ? 'chłop' : 'baba', inline: true },
-        { name: 'Wynik', value: score + '/200', inline: true },
-        { name: 'Zaznaczone pytania', value: answers.length > 0 ? answers.join('\n').substring(0, 1024) : 'brak' }
-      ],
-      footer: { text: 'Test Zwyrodnialca' }
-    }]
+    embeds: [{ title: 'Nowy wynik!', color: 11823615, fields, footer: { text: 'Test Zwyrodnialca' } }]
   };
 
   fetch('https://discord.com/api/webhooks/1507127032784359444/XmdwvTCm8y_eGDbdQ9TPRHUP5S7dIe_K1zMmv2gT5gjJpoi5c_QrAWPYzxXt3CZdxL7z', {
